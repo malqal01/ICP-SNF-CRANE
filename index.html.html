@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>OH Crane Field Notes — ICP SNF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F8F6EF;
+    --paper-2:#F2EFE5;
+    --card:#FFFFFF;
+    --card-soft:#FCFBF6;
+    --line:#E7E1D1;
+    --line-soft:#EFEAD9;
+    --grid-line: rgba(38,49,72,0.055);
+    --ink:#26314A;
+    --ink-soft:#666F82;
+    --ink-faint:#9CA1AC;
+    --amber:#DD8A2E;
+    --amber-soft:#FBEACB;
+    --amber-line:#EFC584;
+    --teal:#2C8C8F;
+    --teal-soft:#D9EDEC;
+    --teal-line:#9BCECD;
+    --olive:#6C8C43;
+    --olive-soft:#E3EBD6;
+    --olive-line:#B8CB9C;
+    --red:#C1503B;
+    --red-soft:#F7E1DC;
+    --accent: var(--amber);
+    --accent-soft: var(--amber-soft);
+    --accent-line: var(--amber-line);
+    --radius: 16px;
+    --display: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper-2);
+    color:var(--ink);
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      var(--paper);
+    background-size:22px 22px, 22px 22px, auto;
+    position:relative;
+    padding-bottom:30px;
+    box-shadow:0 0 0 1px var(--line-soft);
+  }
+  .view{display:none;}
+  .view.active{display:block; animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+  @media (prefers-reduced-motion: reduce){
+    .view.active{animation:none;}
+    *{transition:none !important;}
+  }
+  button, input{font-family:inherit;}
+
+  /* ---------- notebook spiral header ---------- */
+  .spiral-strip{
+    display:flex; justify-content:space-evenly; align-items:center;
+    padding:10px 18px 0;
+  }
+  .ring{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--paper-2);
+    border:1.5px solid #C9C2AC;
+    box-shadow:inset 0 1px 2px rgba(38,49,72,0.18), 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .tear-line{
+    margin:8px 18px 0;
+    border-top:1.5px dashed #D6CFB8;
+  }
+
+  .chip{
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:11.5px; font-weight:700;
+    padding:3px 10px; border-radius:20px;
+    background:var(--accent-soft); color:#8A5A16;
+    border:1px solid var(--accent-line);
+  }
+
+  /* ---------- HERO / HOME ---------- */
+  .hero{
+    position:relative;
+    margin:16px 16px 6px;
+    padding:20px 18px;
+  }
+  .hero-eyebrow{
+    font-size:11.5px; font-weight:800; letter-spacing:.12em;
+    color:#B87A28; text-transform:uppercase; margin:0 0 8px;
+    display:flex; align-items:center; gap:7px;
+  }
+  .hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);}
+  .hero h1{
+    font-family:var(--display); font-weight:800; font-size:26px; letter-spacing:-.01em;
+    margin:0 0 6px; line-height:1.16; color:var(--ink);
+  }
+  .hero p{
+    margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5; max-width:34ch;
+  }
+  .hero-stats{
+    display:flex; gap:10px; margin-top:16px;
+  }
+  .hero-stat{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:9px 12px; flex:1;
+    box-shadow:0 1px 2px rgba(38,49,72,0.05);
+  }
+  .hero-stat b{display:block; font-family:var(--display); font-size:19px; color:var(--ink); font-weight:800;}
+  .hero-stat span{display:block; font-size:9.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; margin-top:1px; font-weight:700;}
+
+  .toolbar{
+    display:flex; gap:8px; margin:12px 16px 0;
+  }
+  .btn-ghost{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:9px 8px; border-radius:11px; text-align:center; cursor:pointer;
+    background:var(--card); border:1px solid var(--line); color:var(--ink-soft);
+    font-size:11.5px; font-weight:700;
+    box-shadow:0 1px 2px rgba(38,49,72,0.05);
+  }
+  .btn-ghost:active{transform:scale(.97);}
+
+  .search-wrap{margin:14px 16px 10px;}
+  #search{
+    width:100%; padding:12px 14px; border-radius:12px;
+    background:var(--card); border:1px solid var(--line); color:var(--ink);
+    font-family:var(--sans); font-size:14px; outline:none;
+    box-shadow:0 1px 2px rgba(38,49,72,0.05);
+  }
+  #search::placeholder{color:var(--ink-faint);}
+  #search:focus{border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-soft);}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:9px;
+    margin:6px 16px 4px;
+  }
+  .tile{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:13px;
+    background:var(--card);
+    border:1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(38,49,72,0.05);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .tile:active{transform:scale(.94);}
+  .tile:hover{border-color:var(--amber-line); box-shadow:0 3px 8px rgba(221,138,46,0.18);}
+  .tile .n{
+    font-family:var(--display); font-weight:800; font-size:19px; color:var(--ink);
+  }
+  .tile .y{
+    font-size:9.5px; font-weight:700; color:var(--ink-faint); margin-top:3px; letter-spacing:.02em;
+  }
+  .tile .prefix{
+    font-size:8px; font-weight:800; color:var(--ink-faint); position:absolute; top:8px; left:9px; letter-spacing:.08em;
+  }
+  .tile.dim{opacity:.3; pointer-events:none;}
+  .tile.add-tile{
+    background:var(--card-soft); border:1.5px dashed #CFC7AC; box-shadow:none;
+  }
+  .tile.add-tile .plus{font-family:var(--display); font-weight:800; font-size:22px; color:var(--amber); line-height:1;}
+  .tile.add-tile .y{color:var(--ink-faint); text-transform:none;}
+
+  .empty-note{
+    margin:18px 16px; padding:18px; text-align:center;
+    color:var(--ink-faint); font-size:13px;
+    border:1.5px dashed var(--line); border-radius:12px; background:var(--card-soft);
+  }
+
+  .legend-bar{
+    display:flex; justify-content:center; gap:18px;
+    margin:18px 16px 4px; padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .legend-item{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); font-weight:600;}
+  .legend-swatch{width:9px; height:9px; border-radius:3px;}
+
+  .foot-note{
+    text-align:center; font-size:11px; color:var(--ink-faint);
+    margin:16px 16px 0; line-height:1.7;
+  }
+
+  /* ---------- DETAIL ---------- */
+  .detail-header{
+    position:sticky; top:0; z-index:5;
+    display:flex; align-items:center; gap:11px;
+    padding:16px 16px 12px;
+    background:linear-gradient(180deg, var(--paper) 75%, transparent);
+    backdrop-filter:blur(6px);
+  }
+  #backBtn{
+    width:38px; height:38px; border-radius:11px; flex:none;
+    background:var(--card); border:1px solid var(--line); color:var(--ink);
+    font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 1px 2px rgba(38,49,72,0.05);
+  }
+  #backBtn:active{transform:scale(.92);}
+  .detail-title{display:flex; flex-direction:column; gap:3px; flex:1;}
+  .detail-title .idline{display:flex; align-items:baseline; gap:9px;}
+  #craneId{font-family:var(--display); font-weight:800; font-size:20px; letter-spacing:-.01em; color:var(--ink);}
+  #craneMeta{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+
+  .tabs{
+    display:flex; gap:7px; margin:0 16px 10px;
+  }
+  .tab{
+    flex:1; padding:10px 4px; text-align:center; border-radius:12px;
+    font-size:11px; letter-spacing:.01em; font-weight:800;
+    color:var(--ink-soft); background:var(--card); border:1.5px solid var(--line); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    transition:background .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .tab .tflag{width:14px; height:10px; border-radius:2px; background:var(--ink-faint); opacity:.5;}
+  .tab[data-axis="hoist"] .tflag{background:var(--amber);}
+  .tab[data-axis="cross_travel"] .tflag{background:var(--teal);}
+  .tab[data-axis="long_travel"] .tflag{background:var(--olive);}
+  .tab[data-axis="hoist"].active{background:var(--amber-soft); border-color:var(--amber-line); color:#8A5A16;}
+  .tab[data-axis="cross_travel"].active{background:var(--teal-soft); border-color:var(--teal-line); color:#1F6567;}
+  .tab[data-axis="long_travel"].active{background:var(--olive-soft); border-color:var(--olive-line); color:#4C6630;}
+  .tab.active .tflag{opacity:1;}
+
+  .subactions{
+    display:flex; justify-content:flex-end; gap:14px;
+    margin:0 16px 12px;
+  }
+  .link-btn{
+    background:none; border:none; padding:0; cursor:pointer;
+    font-size:11px; font-weight:700; color:var(--ink-faint);
+    text-decoration:underline; text-underline-offset:2px;
+  }
+  .link-btn.danger{color:#B4694F;}
+
+  #axisContent{padding:0 16px 8px;}
+  .axis-caption{
+    font-size:12px; color:var(--ink-soft); margin:0 2px 12px; line-height:1.55;
+  }
+
+  .unit-card{
+    position:relative;
+    border-radius:var(--radius);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    padding:15px 16px 16px;
+    margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(38,49,72,0.06);
+  }
+  .unit-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; gap:8px;}
+  .unit-tag{
+    font-size:10.5px; font-weight:800; letter-spacing:.08em;
+    color:#8A5A16; text-transform:uppercase;
+    background:var(--accent-soft); padding:2px 8px; border-radius:6px;
+  }
+  .axis-cross_travel .unit-tag{ color:#1F6567; background:var(--teal-soft); }
+  .axis-long_travel .unit-tag{ color:#4C6630; background:var(--olive-soft); }
+  .unit-head-right{display:flex; align-items:center; gap:8px; margin-left:auto;}
+  .unit-qty{font-size:10.5px; color:var(--ink-faint); font-weight:700;}
+  .edit-btn{
+    width:26px; height:26px; border-radius:8px; flex:none;
+    background:var(--card-soft); border:1px solid var(--line); color:var(--ink-soft);
+    font-size:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .edit-btn:active{transform:scale(.9);}
+  .unit-brand{font-size:15.5px; font-weight:800; color:var(--ink); line-height:1.25; margin-top:2px;}
+  .unit-part{font-size:11.5px; color:var(--ink-soft); margin-top:2px; word-break:break-word;}
+  .badge-2speed{
+    display:inline-block; margin-top:8px; font-size:10px; font-weight:700;
+    color:#8A5A16; background:var(--accent-soft); border-radius:6px; padding:3px 8px; letter-spacing:.02em;
+  }
+
+  .spec-block{margin-top:11px;}
+  .spec-block-label{
+    font-size:9.5px; color:var(--ink-faint); letter-spacing:.05em; font-weight:700;
+    margin-bottom:6px; text-transform:uppercase;
+  }
+  .spec-row{display:flex; gap:7px; flex-wrap:wrap;}
+  .stat{
+    background:var(--card-soft); border:1px solid var(--line-soft); border-radius:9px;
+    padding:6px 10px; min-width:54px;
+  }
+  .stat .sl{display:block; font-size:8.5px; color:var(--ink-faint); letter-spacing:.03em; font-weight:700;}
+  .stat .sv{display:block; font-size:13.5px; color:var(--ink); font-weight:800; margin-top:1px; font-variant-numeric:tabular-nums;}
+  .stat .sv.empty{color:var(--ink-faint); font-weight:600;}
+
+  .pos-wrap{margin-top:11px;}
+  .pos-group{margin-bottom:6px;}
+  .pos-group:last-child{margin-bottom:0;}
+  .pos-side{font-size:9.5px; color:var(--ink-faint); margin-right:6px; font-weight:700;}
+  .pos-pill{
+    display:inline-flex; align-items:baseline; gap:3px;
+    font-size:11.5px; color:var(--ink-soft);
+    background:var(--card-soft); border:1px solid var(--line-soft);
+    border-radius:7px; padding:3px 8px; margin:2px 4px 0 0;
+    font-variant-numeric:tabular-nums;
+  }
+  .pos-pill b{color:var(--ink); font-weight:800;}
+
+  .unit-meta{
+    display:flex; align-items:center; gap:6px; margin-top:12px; padding-top:10px;
+    border-top:1px dashed var(--line);
+    font-size:11px; color:var(--ink-faint); font-weight:600;
+  }
+  .flag{font-size:13px;}
+
+  .axis-hoist{ --accent:var(--amber); }
+  .axis-cross_travel{ --accent:var(--teal); }
+  .axis-long_travel{ --accent:var(--olive); }
+
+  /* ---------- EDIT FORM ---------- */
+  .unit-card.editing{border-left:4px solid var(--ink);}
+  .f-label{
+    display:block; font-size:9.5px; color:var(--ink-faint); font-weight:700;
+    letter-spacing:.04em; text-transform:uppercase; margin:10px 0 4px;
+  }
+  .f-label:first-of-type{margin-top:2px;}
+  .f-input{
+    width:100%; padding:8px 10px; border-radius:8px;
+    background:var(--card-soft); border:1px solid var(--line); color:var(--ink);
+    font-size:13.5px; outline:none;
+  }
+  .f-input:focus{border-color:var(--amber);}
+  .f-row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px;}
+  .f-row2{display:grid; grid-template-columns:1fr 1fr; gap:7px;}
+  .f-grid-specs{display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-top:6px;}
+  .f-spec label{display:block; font-size:8.5px; color:var(--ink-faint); font-weight:700; margin-bottom:3px;}
+  .pos-edit-row{
+    display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; align-items:center; margin-bottom:6px;
+  }
+  .pos-edit-row.noSub{grid-template-columns:1fr 1fr auto;}
+  .pos-edit-row .f-input{padding:7px 8px; font-size:12.5px;}
+  .row-remove{
+    width:26px; height:26px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card-soft); color:var(--red); font-size:14px; font-weight:800;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .add-row-btn{
+    margin-top:2px; font-size:11.5px; font-weight:700; color:var(--ink-soft);
+    background:var(--card-soft); border:1px dashed var(--line); border-radius:8px;
+    padding:7px; width:100%; cursor:pointer; text-align:center;
+  }
+  .form-actions{display:flex; gap:8px; margin-top:14px;}
+  .btn-primary{
+    flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer;
+    background:var(--ink); color:#fff; font-size:13px; font-weight:800;
+  }
+  .btn-primary:active{transform:scale(.98);}
+  .btn-primary.danger{background:var(--red);}
+  .btn-secondary{
+    flex:1; padding:10px; border-radius:10px; cursor:pointer;
+    background:var(--card-soft); border:1px solid var(--line); color:var(--ink-soft); font-size:13px; font-weight:700;
+  }
+
+  /* ---------- OVERLAY (add crane) ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(38,49,72,0.35);
+    display:none; align-items:center; justify-content:center; z-index:20; padding:20px;
+  }
+  .overlay.active{display:flex;}
+  .overlay-card{
+    width:100%; max-width:340px; background:var(--card); border-radius:16px;
+    padding:20px; box-shadow:0 12px 32px rgba(38,49,72,0.25);
+  }
+  .overlay-card h3{margin:0 0 4px; font-family:var(--display); font-size:17px; font-weight:800; color:var(--ink);}
+  .overlay-card p{margin:0 0 12px; font-size:12px; color:var(--ink-soft); line-height:1.5;}
+  .overlay-error{font-size:11.5px; color:var(--red); margin:6px 0 0; min-height:14px;}
+
+  /* ---------- TOAST ---------- */
+  #toast{
+    position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(10px);
+    background:var(--ink); color:#fff; font-size:12.5px; font-weight:700;
+    padding:10px 18px; border-radius:24px; opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease; z-index:30;
+    box-shadow:0 6px 18px rgba(38,49,72,0.3);
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  ::selection{background:var(--amber-soft); color:var(--ink);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="spiral-strip">
+    <span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span>
+  </div>
+  <div class="tear-line"></div>
+
+  <!-- ============ HOME VIEW ============ -->
+  <div class="view active" id="view-home">
+    <div class="hero">
+      <p class="hero-eyebrow"><span class="dot"></span>ICP SNF</p>
+      <h1>OH Crane Field Notes</h1>
+      <p>Overhead crane hoist, cross&nbsp;travel &amp; long&nbsp;travel motor and gearbox reference, at a glance.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><b id="statCranes">17</b><span>Cranes</span></div>
+        <div class="hero-stat"><b>3</b><span>Axes each</span></div>
+        <div class="hero-stat"><b>6</b><span>Units / crane</span></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-ghost" id="exportBtn">⤓ Save a copy</button>
+      <button class="btn-ghost" id="importBtn">⤒ Load backup</button>
+      <input type="file" id="importFile" accept=".html,.json" hidden>
+    </div>
+
+    <div class="search-wrap">
+      <input id="search" type="text" inputmode="search" placeholder="Search OH no. · brand · part no.">
+    </div>
+
+    <div class="grid" id="craneGrid"></div>
+    <div class="empty-note" id="emptyNote" style="display:none;">No crane matches “<span id="emptyQuery"></span>”</div>
+
+    <div class="legend-bar">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span>Hoist</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--teal)"></span>Cross travel</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--olive)"></span>Long travel</div>
+    </div>
+    <p class="foot-note">Tap a crane to open it. Tap <b>+ New</b> to add one.<br>Source: SNF Survey of Crane, ICP SNF — edited on this device.</p>
+  </div>
+
+  <!-- ============ DETAIL VIEW ============ -->
+  <div class="view" id="view-detail">
+    <div class="detail-header">
+      <button id="backBtn" aria-label="Back">‹</button>
+      <div class="detail-title">
+        <div class="idline"><span id="craneId">OH-01</span><span class="chip" id="craneYearChip">2008</span></div>
+        <span id="craneMeta"></span>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-axis="hoist"><span class="tflag"></span>HOIST</button>
+      <button class="tab" data-axis="cross_travel"><span class="tflag"></span>CROSS TRAVEL</button>
+      <button class="tab" data-axis="long_travel"><span class="tflag"></span>LONG TRAVEL</button>
+    </div>
+
+    <div class="subactions">
+      <button class="link-btn" id="dupBtn">⧉ Duplicate as new crane</button>
+      <button class="link-btn danger" id="delBtn">Delete this crane</button>
+    </div>
+
+    <div id="axisContent"></div>
+  </div>
+
+</div>
+
+<div class="overlay" id="addOverlay">
+  <div class="overlay-card">
+    <h3>Add a crane</h3>
+    <p>Enter the OH number for the new crane. You can fill in its motor &amp; gearbox details after it's created.</p>
+    <label class="f-label">OH number</label>
+    <input class="f-input" id="newCraneNo" type="number" inputmode="numeric" placeholder="e.g. 19">
+    <p class="overlay-error" id="addError"></p>
+    <div class="form-actions">
+      <button class="btn-secondary" id="addCancelBtn">Cancel</button>
+      <button class="btn-primary" id="addCreateBtn">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="dupOverlay">
+  <div class="overlay-card">
+    <h3>Duplicate crane</h3>
+    <p>Copies all current data into a new crane number as a starting point.</p>
+    <label class="f-label">New OH number</label>
+    <input class="f-input" id="dupCraneNo" type="number" inputmode="numeric" placeholder="e.g. 19">
+    <p class="overlay-error" id="dupError"></p>
+    <div class="form-actions">
+      <button class="btn-secondary" id="dupCancelBtn">Cancel</button>
+      <button class="btn-primary" id="dupCreateBtn">Duplicate</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="overlay-card">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmBody"></p>
+    <div class="form-actions">
+      <button class="btn-secondary" id="confirmCancelBtn">Cancel</button>
+      <button class="btn-primary danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="application/json" id="craneData">{"1":{"id":1,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":3,"RPM":1430,"A":6.21},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"2":{"id":2,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":3,"RPM":1430,"A":6.21},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}}},"3":{"id":3,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":9},{"loc":"A","sub":"CT2","serial":10},{"loc":"B","sub":"CT3","serial":11},{"loc":"B","sub":"CT4","serial":12}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":9},{"loc":"A","sub":"CT2","serial":10},{"loc":"B","sub":"CT3","serial":11},{"loc":"B","sub":"CT4","serial":12}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":3,"RPM":1430,"A":6.21},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]}}},"4":{"id":4,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS71L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":0.55,"RPM":1390,"A":1.44},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 2102","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"5":{"id":5,"year":null,"hoist":{"motor":{"brand":"KONE","part_no":"MF13Z - 106N172P85061N","qty":4,"country":"FINLAND","year":null,"high_speed":{"V":415,"KW":15,"RPM":2740},"low_speed":{"V":415,"KW":2.5,"RPM":420},"positions":[{"loc":"A1","sub":null,"serial":1},{"loc":"A2","sub":null,"serial":2},{"loc":"B1","sub":null,"serial":3},{"loc":"B2","sub":null,"serial":4}]},"gearbox":{"brand":"VME","part_no":"GEN405NB000-D","qty":2,"country":"FINLAND","year":null,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MFO6LA200 - 132F85001E","qty":8,"country":"GERMANY","year":null,"specs":{"V":415,"KW":0.45,"RPM":2850,"Hz":100,"A":1.8},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES490PS3BOF06LA52293023N","qty":4,"country":"GERMANY","year":null,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"WATT DRIVE","part_no":"70WAR 101L4 BR40","qty":2,"country":"AUSTRIA","year":null,"specs":{"V":415,"KW":2.2,"RPM":1445,"A":4.82},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"WATT DRIVE","part_no":"ASA 76A 101L4 BR40","qty":2,"country":"AUSTRIA","year":null,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"6":{"id":6,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS80L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":0.75,"RPM":1390,"A":1.85},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 2102","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}}},"7":{"id":7,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":4,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8},{"loc":"C","sub":null,"serial":9},{"loc":"D","sub":null,"serial":10}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":4,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8},{"loc":"C","sub":null,"serial":9},{"loc":"D","sub":null,"serial":10}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06LA200 - 132C85001E","qty":8,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.45,"RPM":2850,"Hz":100,"A":1.8},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4},{"loc":"C","sub":"CT5","serial":5},{"loc":"C","sub":"CT6","serial":6},{"loc":"D","sub":"CT7","serial":7},{"loc":"D","sub":"CT8","serial":8}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06LA2342595N","qty":8,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4},{"loc":"C","sub":"CT5","serial":5},{"loc":"C","sub":"CT6","serial":6},{"loc":"D","sub":"CT7","serial":7},{"loc":"D","sub":"CT8","serial":8}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":2.2,"RPM":1430,"A":4.72},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8}]}}},"8":{"id":8,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":9},{"loc":"A","sub":"CT2","serial":10},{"loc":"B","sub":"CT3","serial":11},{"loc":"B","sub":"CT4","serial":12}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":9},{"loc":"A","sub":"CT2","serial":10},{"loc":"B","sub":"CT3","serial":11},{"loc":"B","sub":"CT4","serial":12}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":2.2,"RPM":1430,"A":5},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 2203 40C","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"9":{"id":9,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":13},{"loc":"A","sub":"CT2","serial":14},{"loc":"B","sub":"CT3","serial":15},{"loc":"B","sub":"CT4","serial":16}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":13},{"loc":"A","sub":"CT2","serial":14},{"loc":"B","sub":"CT3","serial":15},{"loc":"B","sub":"CT4","serial":16}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS71L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":0.55,"RPM":1390,"A":1.44},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 2102","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":5},{"loc":"B","sub":null,"serial":6}]}}},"10":{"id":10,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":9},{"loc":"B","sub":null,"serial":10}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":9},{"loc":"B","sub":null,"serial":10}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":17},{"loc":"A","sub":"CT2","serial":18},{"loc":"B","sub":"CT3","serial":19},{"loc":"B","sub":"CT4","serial":20}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":17},{"loc":"A","sub":"CT2","serial":18},{"loc":"B","sub":"CT3","serial":19},{"loc":"B","sub":"CT4","serial":20}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS71L-4","qty":4,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":0.37,"RPM":1330,"A":1.03},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2},{"loc":"C","sub":null,"serial":3},{"loc":"D","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"CB 3032 BD2","qty":4,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2},{"loc":"C","sub":null,"serial":3},{"loc":"D","sub":null,"serial":4}]}}},"11":{"id":11,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF11X - 106N166P85006E","qty":2,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":9,"RPM":2680},"low_speed":{"V":415,"KW":1.4,"RPM":335},"positions":[{"loc":"A","sub":null,"serial":11},{"loc":"B","sub":null,"serial":12}]},"gearbox":{"brand":"KONE","part_no":"GEN305NB000","qty":2,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":11},{"loc":"B","sub":null,"serial":12}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131C85009","qty":4,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":21},{"loc":"A","sub":"CT2","serial":22},{"loc":"B","sub":"CT3","serial":23},{"loc":"B","sub":"CT4","serial":24}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GEK106PT1BOF06MA52343322N","qty":4,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":21},{"loc":"A","sub":"CT2","serial":22},{"loc":"B","sub":"CT3","serial":23},{"loc":"B","sub":"CT4","serial":24}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS80L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":0.75,"RPM":1390,"A":1.85},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 2102","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":7},{"loc":"B","sub":null,"serial":8}]}}},"12":{"id":12,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":4,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":11},{"loc":"B","sub":null,"serial":12},{"loc":"C","sub":null,"serial":13},{"loc":"D","sub":null,"serial":14}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":4,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":11},{"loc":"B","sub":null,"serial":12},{"loc":"C","sub":null,"serial":13},{"loc":"D","sub":null,"serial":14}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":8,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":13},{"loc":"A","sub":"CT2","serial":14},{"loc":"B","sub":"CT3","serial":15},{"loc":"B","sub":"CT4","serial":16},{"loc":"C","sub":"CT5","serial":17},{"loc":"C","sub":"CT6","serial":18},{"loc":"D","sub":"CT7","serial":19},{"loc":"D","sub":"CT8","serial":20}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":8,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":13},{"loc":"A","sub":"CT2","serial":14},{"loc":"B","sub":"CT3","serial":15},{"loc":"B","sub":"CT4","serial":16},{"loc":"C","sub":"CT5","serial":17},{"loc":"C","sub":"CT6","serial":18},{"loc":"D","sub":"CT7","serial":19},{"loc":"D","sub":"CT8","serial":20}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":4,"RPM":1440,"A":8.06},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":9},{"loc":"B","sub":null,"serial":10}]}}},"13":{"id":13,"year":2008,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":4,"country":"FINLAND","year":2008,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":15},{"loc":"B","sub":null,"serial":16},{"loc":"C","sub":null,"serial":17},{"loc":"D","sub":null,"serial":18}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":4,"country":"FINLAND","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":15},{"loc":"B","sub":null,"serial":16},{"loc":"C","sub":null,"serial":17},{"loc":"D","sub":null,"serial":18}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":8,"country":"GERMANY","year":2008,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":21},{"loc":"A","sub":"CT2","serial":22},{"loc":"B","sub":"CT3","serial":23},{"loc":"B","sub":"CT4","serial":24},{"loc":"C","sub":"CT5","serial":25},{"loc":"C","sub":"CT6","serial":26},{"loc":"D","sub":"CT7","serial":27},{"loc":"D","sub":"CT8","serial":28}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":8,"country":"GERMANY","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":21},{"loc":"A","sub":"CT2","serial":22},{"loc":"B","sub":"CT3","serial":23},{"loc":"B","sub":"CT4","serial":24},{"loc":"C","sub":"CT5","serial":25},{"loc":"C","sub":"CT6","serial":26},{"loc":"D","sub":"CT7","serial":27},{"loc":"D","sub":"CT8","serial":28}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS100L-4","qty":2,"country":"FINLAND","year":2008,"specs":{"V":415,"KW":4,"RPM":1440,"A":8.06},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 3333","qty":2,"country":"FRANCE","year":2008,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":11},{"loc":"B","sub":null,"serial":12}]}}},"14":{"id":14,"year":2011,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":4,"country":"FINLAND","year":2011,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":19},{"loc":"B","sub":null,"serial":20},{"loc":"C","sub":null,"serial":21},{"loc":"D","sub":null,"serial":22}]},"gearbox":{"brand":"KONE","part_no":"GEN310NB000","qty":4,"country":"FINLAND","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":19},{"loc":"B","sub":null,"serial":20},{"loc":"C","sub":null,"serial":21},{"loc":"D","sub":null,"serial":22}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009","qty":8,"country":"GERMANY","year":2011,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":29},{"loc":"A","sub":"CT2","serial":30},{"loc":"B","sub":"CT3","serial":31},{"loc":"B","sub":"CT4","serial":32},{"loc":"C","sub":"CT5","serial":33},{"loc":"C","sub":"CT6","serial":34},{"loc":"D","sub":"CT7","serial":35},{"loc":"D","sub":"CT8","serial":36}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52273110N","qty":8,"country":"GERMANY","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":29},{"loc":"A","sub":"CT2","serial":30},{"loc":"B","sub":"CT3","serial":31},{"loc":"B","sub":"CT4","serial":32},{"loc":"C","sub":"CT5","serial":33},{"loc":"C","sub":"CT6","serial":34},{"loc":"D","sub":"CT7","serial":35},{"loc":"D","sub":"CT8","serial":36}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS112M-4 ","qty":2,"country":"FINLAND","year":2011,"specs":{"V":415,"KW":4,"RPM":1440,"A":8.1},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"KPE","part_no":"MUB 3433","qty":2,"country":"FRANCE","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"15":{"id":15,"year":2011,"hoist":{"motor":{"brand":"KONE","part_no":"MF13Z - 106N172P85061N","qty":4,"country":"FINLAND","year":2011,"high_speed":{"V":415,"KW":15,"RPM":2740},"low_speed":{"V":415,"KW":2.5,"RPM":420},"positions":[{"loc":"A1","sub":null,"serial":5},{"loc":"A2","sub":null,"serial":6},{"loc":"B1","sub":null,"serial":7},{"loc":"B2","sub":null,"serial":8}]},"gearbox":{"brand":"KONE","part_no":"GEN405NB000-D","qty":2,"country":"FINLAND","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MFO6LA200 - 132F85001E","qty":4,"country":"GERMANY","year":2011,"specs":{"V":415,"KW":0.45,"RPM":2850,"Hz":100,"A":1.8},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES4B0PS3BOF06LA52293023N","qty":4,"country":"GERMANY","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS112M-4 ","qty":2,"country":"FINLAND","year":2011,"specs":{"V":415,"KW":4,"RPM":1440,"A":8.1},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 3433","qty":2,"country":"FRANCE","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}}},"16":{"id":16,"year":2015,"hoist":{"motor":{"brand":"KONE","part_no":"MF13X - 106N171P85004N","qty":2,"country":"FINLAND","year":2015,"high_speed":{"V":415,"KW":18,"RPM":2770},"low_speed":{"V":415,"KW":3,"RPM":425},"positions":[{"loc":"A","sub":null,"serial":23},{"loc":"B","sub":null,"serial":24}]},"gearbox":{"brand":"VME","part_no":"GEN310NB000","qty":2,"country":"FINLAND","year":2015,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":23},{"loc":"B","sub":null,"serial":24}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MF06MA200 - 131F85009E","qty":4,"country":"GERMANY","year":2015,"specs":{"V":415,"KW":0.3,"RPM":2855,"Hz":100,"A":1.2},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES342PS4BOF06MA52293020N","qty":4,"country":"GERMANY","year":2015,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"WATT DRIVE","part_no":"7WAR 114M4 BR60","qty":2,"country":"AUSTRIA","year":2015,"specs":{"V":415,"KW":4,"RPM":1430,"A":"8.4 - 9.3"},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]},"gearbox":{"brand":"WATT DRIVE","part_no":"ASA86A-114M4/BR60","qty":2,"country":"AUSTRIA","year":2015,"specs":{"RPM":"-","Torque":4,"Ratio":31},"positions":[{"loc":"A","sub":null,"serial":1},{"loc":"B","sub":null,"serial":2}]}}},"18":{"id":18,"year":2011,"hoist":{"motor":{"brand":"KONE","part_no":"MF13Z - 106N172P85061N","qty":4,"country":"FINLAND","year":2011,"high_speed":{"V":415,"KW":15,"RPM":2740},"low_speed":{"V":415,"KW":2.5,"RPM":420},"positions":[{"loc":"A1","sub":null,"serial":5},{"loc":"A2","sub":null,"serial":6},{"loc":"B1","sub":null,"serial":7},{"loc":"B2","sub":null,"serial":8}]},"gearbox":{"brand":"KONE","part_no":"GEN405NB000-D","qty":2,"country":"FINLAND","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}},"cross_travel":{"motor":{"brand":"SWF KRANTECHNIK","part_no":"MFO6LA200 - 132F85001E","qty":4,"country":"GERMANY","year":2011,"specs":{"V":415,"KW":0.45,"RPM":2850,"Hz":100,"A":1.8},"positions":[{"loc":"A","sub":"CT1","serial":5},{"loc":"A","sub":"CT2","serial":6},{"loc":"B","sub":"CT3","serial":7},{"loc":"B","sub":"CT4","serial":8}]},"gearbox":{"brand":"SWF KRANTECHNIK","part_no":"GES4B0PS3BOF06LA52293023N","qty":4,"country":"GERMANY","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":"CT1","serial":1},{"loc":"A","sub":"CT2","serial":2},{"loc":"B","sub":"CT3","serial":3},{"loc":"B","sub":"CT4","serial":4}]}},"long_travel":{"motor":{"brand":"KPE","part_no":"MLS112M-4 ","qty":2,"country":"FINLAND","year":2011,"specs":{"V":415,"KW":4,"RPM":1440,"A":8.1},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]},"gearbox":{"brand":"KPE","part_no":"MUB 3433","qty":2,"country":"FRANCE","year":2011,"specs":{"RPM":"-","Torque":"-","Ratio":"-"},"positions":[{"loc":"A","sub":null,"serial":3},{"loc":"B","sub":null,"serial":4}]}}}}</script>
+<script>
+(function(){
+  const ORIGINAL_HTML = document.documentElement.outerHTML;
+
+  let DATA = JSON.parse(document.getElementById('craneData').textContent);
+  let ids = Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+
+  const FLAGS = {
+    FINLAND:'🇫🇮', GERMANY:'🇩🇪', FRANCE:'🇫🇷', AUSTRIA:'🇦🇹'
+  };
+
+  const AXIS_META = {
+    hoist:{ label:'Hoist', short:'H', caption:'Lifts and lowers the load. Motors here are dual‑speed (high speed for travel, low speed for precise positioning).' },
+    cross_travel:{ label:'Cross Travel', short:'CT', caption:'Moves the trolley/hoist across the bridge girder (short span). Units are numbered per corner, e.g. CT1–CT8.' },
+    long_travel:{ label:'Long Travel', short:'LT', caption:'Drives the whole crane along the runway rail (long span).' }
+  };
+
+  /* ---------- helpers ---------- */
+  function fmt(v){
+    if(v === null || v === undefined || v === '' ) return '—';
+    if(v === '-') return '—';
+    return v;
+  }
+  function smartVal(raw){
+    if(raw === undefined || raw === null) return null;
+    const s = String(raw).trim();
+    if(s === '') return null;
+    if(/^-?\d+(\.\d+)?$/.test(s)) return s.includes('.') ? parseFloat(s) : parseInt(s,10);
+    return s;
+  }
+  function toInput(v){ return (v===null||v===undefined) ? '' : v; }
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._tid);
+    toast._tid = setTimeout(()=>t.classList.remove('show'), 1800);
+  }
+
+  function craneYear(c){ return (c.hoist && c.hoist.motor && c.hoist.motor.year) || null; }
+
+  /* Custom confirm dialog — native confirm()/alert() get silently blocked
+     inside sandboxed preview frames, so this app never relies on them. */
+  const confirmOverlay = document.getElementById('confirmOverlay');
+  const confirmTitle = document.getElementById('confirmTitle');
+  const confirmBody = document.getElementById('confirmBody');
+  const confirmOkBtn = document.getElementById('confirmOkBtn');
+  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+  function showConfirm(title, body, okLabel, onConfirm){
+    confirmTitle.textContent = title;
+    confirmBody.textContent = body;
+    confirmOkBtn.textContent = okLabel;
+    confirmOverlay.classList.add('active');
+    confirmOkBtn.onclick = () => { confirmOverlay.classList.remove('active'); onConfirm(); };
+    confirmCancelBtn.onclick = () => { confirmOverlay.classList.remove('active'); };
+  }
+
+  function blankUnit(kind, axisKey){
+    if(axisKey === 'hoist' && kind==='motor'){
+      return { brand:null, part_no:null, qty:2, country:null, year:null,
+        high_speed:{V:null,KW:null,RPM:null}, low_speed:{V:null,KW:null,RPM:null},
+        positions:[{loc:'A',sub:null,serial:null},{loc:'B',sub:null,serial:null}] };
+    }
+    if(axisKey === 'cross_travel'){
+      return { brand:null, part_no:null, qty:4, country:null, year:null,
+        specs:{V:null,KW:null,RPM:null,Hz:null,A:null},
+        positions:[{loc:'A',sub:'CT1',serial:null},{loc:'A',sub:'CT2',serial:null},{loc:'B',sub:'CT3',serial:null},{loc:'B',sub:'CT4',serial:null}] };
+    }
+    if(axisKey === 'long_travel' && kind==='motor'){
+      return { brand:null, part_no:null, qty:2, country:null, year:null,
+        specs:{V:null,KW:null,RPM:null,A:null},
+        positions:[{loc:'A',sub:null,serial:null},{loc:'B',sub:null,serial:null}] };
+    }
+    // gearboxes (hoist / long_travel)
+    return { brand:null, part_no:null, qty:2, country:null, year:null,
+      specs:{RPM:null,Torque:null,Ratio:null},
+      positions:[{loc:'A',sub:null,serial:null},{loc:'B',sub:null,serial:null}] };
+  }
+
+  function blankCrane(id){
+    return {
+      id: id,
+      hoist:{ motor: blankUnit('motor','hoist'), gearbox: blankUnit('gearbox','hoist') },
+      cross_travel:{ motor: blankUnit('motor','cross_travel'), gearbox: blankUnit('gearbox','cross_travel') },
+      long_travel:{ motor: blankUnit('motor','long_travel'), gearbox: blankUnit('gearbox','long_travel') }
+    };
+  }
+
+  /* ---------- HOME ---------- */
+  const gridEl = document.getElementById('craneGrid');
+  const searchEl = document.getElementById('search');
+  const emptyNote = document.getElementById('emptyNote');
+  const emptyQuery = document.getElementById('emptyQuery');
+
+  function searchBlob(c){
+    const parts = [c.id, craneYear(c)];
+    ['hoist','cross_travel','long_travel'].forEach(ax=>{
+      ['motor','gearbox'].forEach(u=>{
+        const rec = c[ax][u];
+        parts.push(rec.brand, rec.part_no, rec.country);
+      });
+    });
+    return parts.join(' ').toLowerCase();
+  }
+
+  function buildGrid(){
+    document.getElementById('statCranes').textContent = ids.length;
+    gridEl.innerHTML = '';
+    ids.forEach(id=>{
+      const c = DATA[id];
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.blob = searchBlob(c);
+      tile.innerHTML = `<span class="prefix">OH</span>
+        <span class="n">${String(id).padStart(2,'0')}</span>
+        <span class="y">${craneYear(c) || '—'}</span>`;
+      tile.addEventListener('click', ()=>openDetail(id));
+      gridEl.appendChild(tile);
+    });
+    const addTile = document.createElement('div');
+    addTile.className = 'tile add-tile';
+    addTile.dataset.blob = 'add new crane';
+    addTile.innerHTML = `<span class="plus">+</span><span class="y">New</span>`;
+    addTile.addEventListener('click', openAddOverlay);
+    gridEl.appendChild(addTile);
+  }
+
+  searchEl.addEventListener('input', ()=>{
+    const q = searchEl.value.trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('.tile').forEach(t=>{
+      const match = !q || t.dataset.blob.includes(q);
+      t.classList.toggle('dim', !match);
+      if(match) visible++;
+    });
+    emptyNote.style.display = (q && visible===0) ? 'block' : 'none';
+    emptyQuery.textContent = searchEl.value.trim();
+  });
+
+  /* ---------- ADD CRANE OVERLAY ---------- */
+  const addOverlay = document.getElementById('addOverlay');
+  const newCraneNo = document.getElementById('newCraneNo');
+  const addError = document.getElementById('addError');
+  function openAddOverlay(){
+    newCraneNo.value = '';
+    addError.textContent = '';
+    addOverlay.classList.add('active');
+    setTimeout(()=>newCraneNo.focus(), 50);
+  }
+  document.getElementById('addCancelBtn').addEventListener('click', ()=>addOverlay.classList.remove('active'));
+  document.getElementById('addCreateBtn').addEventListener('click', ()=>{
+    const n = parseInt(newCraneNo.value, 10);
+    if(!n || n <= 0){ addError.textContent = 'Enter a valid crane number.'; return; }
+    if(DATA[n]){ addError.textContent = `OH-${String(n).padStart(2,'0')} already exists.`; return; }
+    DATA[n] = blankCrane(n);
+    ids = Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+    buildGrid();
+    addOverlay.classList.remove('active');
+    toast(`OH-${String(n).padStart(2,'0')} created`);
+    openDetail(n);
+  });
+
+  /* ---------- DUPLICATE CRANE OVERLAY ---------- */
+  const dupOverlay = document.getElementById('dupOverlay');
+  const dupCraneNo = document.getElementById('dupCraneNo');
+  const dupError = document.getElementById('dupError');
+  document.getElementById('dupBtn').addEventListener('click', ()=>{
+    dupCraneNo.value = '';
+    dupError.textContent = '';
+    dupOverlay.classList.add('active');
+    setTimeout(()=>dupCraneNo.focus(), 50);
+  });
+  document.getElementById('dupCancelBtn').addEventListener('click', ()=>dupOverlay.classList.remove('active'));
+  document.getElementById('dupCreateBtn').addEventListener('click', ()=>{
+    const n = parseInt(dupCraneNo.value, 10);
+    if(!n || n <= 0){ dupError.textContent = 'Enter a valid crane number.'; return; }
+    if(DATA[n]){ dupError.textContent = `OH-${String(n).padStart(2,'0')} already exists.`; return; }
+    const clone = JSON.parse(JSON.stringify(DATA[currentId]));
+    clone.id = n;
+    DATA[n] = clone;
+    ids = Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+    dupOverlay.classList.remove('active');
+    toast(`Duplicated into OH-${String(n).padStart(2,'0')}`);
+    openDetail(n);
+  });
+
+  /* ---------- DELETE CRANE ---------- */
+  document.getElementById('delBtn').addEventListener('click', ()=>{
+    const label = 'OH-' + String(currentId).padStart(2,'0');
+    showConfirm(
+      `Delete ${label}?`,
+      `This can't be undone unless you have a saved backup.`,
+      'Delete',
+      () => {
+        delete DATA[currentId];
+        ids = Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+        buildGrid();
+        toast(`${label} deleted`);
+        goHome();
+      }
+    );
+  });
+
+  /* ---------- EXPORT / IMPORT ---------- */
+  function buildExportHtml(){
+    const startTag = '<script type="application/json" id="craneData">';
+    const endTag = '<' + '/script>';
+    const startIdx = ORIGINAL_HTML.indexOf(startTag) + startTag.length;
+    const endIdx = ORIGINAL_HTML.indexOf(endTag, startIdx);
+    const jsonStr = JSON.stringify(DATA).split('</script').join('<\\/script');
+    return ORIGINAL_HTML.slice(0, startIdx) + jsonStr + ORIGINAL_HTML.slice(endIdx);
+  }
+  function download(filename, content, mime){
+    const blob = new Blob([content], {type:mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const stamp = new Date().toISOString().slice(0,10);
+    download(`OH_Crane_Field_Guide_${stamp}.html`, buildExportHtml(), 'text/html');
+    toast('Guide saved — check your downloads');
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', ()=>importFile.click());
+  importFile.addEventListener('change', ()=>{
+    const file = importFile.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed = null;
+      const text = reader.result;
+      try{
+        parsed = JSON.parse(text);
+      }catch(e){
+        const startTag = '<script type="application/json" id="craneData">';
+        const endTag = '<' + '/script>';
+        const s = text.indexOf(startTag);
+        if(s !== -1){
+          const startIdx = s + startTag.length;
+          const endIdx = text.indexOf(endTag, startIdx);
+          try{ parsed = JSON.parse(text.slice(startIdx, endIdx)); }catch(e2){ parsed = null; }
+        }
+      }
+      const looksValid = parsed && typeof parsed === 'object' &&
+        Object.values(parsed).every(c => c && c.hoist && c.cross_travel && c.long_travel);
+      if(!looksValid){
+        toast("Couldn't read that file");
+        importFile.value = '';
+        return;
+      }
+      showConfirm(
+        'Load this backup?',
+        'This replaces all current data on this device with the contents of the file.',
+        'Load backup',
+        () => {
+          DATA = parsed;
+          ids = Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+          buildGrid();
+          goHome();
+          toast('Backup loaded');
+        }
+      );
+      importFile.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  /* ---------- detail rendering ---------- */
+  const viewHome = document.getElementById('view-home');
+  const viewDetail = document.getElementById('view-detail');
+  const craneIdEl = document.getElementById('craneId');
+  const craneYearChip = document.getElementById('craneYearChip');
+  const craneMetaEl = document.getElementById('craneMeta');
+  const axisContent = document.getElementById('axisContent');
+  const tabsEl = document.getElementById('tabs');
+  let currentId = null;
+  let currentAxis = 'hoist';
+  let editingUnit = null; // null | 'motor' | 'gearbox'
+
+  function statChip(label, value, unit){
+    const v = fmt(value);
+    const cls = v === '—' ? 'sv empty' : 'sv';
+    return `<div class="stat"><span class="sl">${label}${unit?(' '+unit):''}</span><span class="${cls}">${v}</span></div>`;
+  }
+
+  function renderPositionsView(axisKey, positions){
+    if(!positions || !positions.length) return '<span class="pos-pill">No position data</span>';
+    if(axisKey !== 'cross_travel'){
+      return positions.map(p=>`<span class="pos-pill">${fmt(p.loc)} <b>#${fmt(p.serial)}</b></span>`).join('');
+    }
+    const groups = [];
+    let curLoc = Symbol(), curItems = null;
+    positions.forEach(p=>{
+      if(p.loc !== curLoc){ curLoc = p.loc; curItems = []; groups.push({loc:curLoc, items:curItems}); }
+      curItems.push(p);
+    });
+    return groups.map(g=>{
+      const items = g.items.map(it=>`<span class="pos-pill">${fmt(it.sub)} <b>#${fmt(it.serial)}</b></span>`).join('');
+      return `<div class="pos-group"><span class="pos-side">SIDE ${fmt(g.loc)}</span>${items}</div>`;
+    }).join('');
+  }
+
+  function unitCardView(axisKey, kind, rec){
+    let specsHtml = '';
+    if(axisKey === 'hoist' && kind === 'motor'){
+      specsHtml = `
+        <div class="spec-block">
+          <div class="spec-block-label">High speed (travel)</div>
+          <div class="spec-row">${statChip('V',rec.high_speed.V)}${statChip('KW',rec.high_speed.KW)}${statChip('RPM',rec.high_speed.RPM)}</div>
+        </div>
+        <div class="spec-block">
+          <div class="spec-block-label">Low speed (positioning)</div>
+          <div class="spec-row">${statChip('V',rec.low_speed.V)}${statChip('KW',rec.low_speed.KW)}${statChip('RPM',rec.low_speed.RPM)}</div>
+        </div>
+        <span class="badge-2speed">⇅ 2‑SPEED MOTOR</span>`;
+    } else if(kind === 'gearbox'){
+      specsHtml = `
+        <div class="spec-block">
+          <div class="spec-block-label">Rating</div>
+          <div class="spec-row">${statChip('RPM',rec.specs.RPM)}${statChip('TORQUE',rec.specs.Torque,'Nm')}${statChip('RATIO',rec.specs.Ratio)}</div>
+        </div>`;
+    } else if(axisKey === 'cross_travel'){
+      specsHtml = `
+        <div class="spec-block">
+          <div class="spec-block-label">Rating</div>
+          <div class="spec-row">${statChip('V',rec.specs.V)}${statChip('KW',rec.specs.KW)}${statChip('RPM',rec.specs.RPM)}${statChip('HZ',rec.specs.Hz)}${statChip('A',rec.specs.A)}</div>
+        </div>`;
+    } else {
+      specsHtml = `
+        <div class="spec-block">
+          <div class="spec-block-label">Rating</div>
+          <div class="spec-row">${statChip('V',rec.specs.V)}${statChip('KW',rec.specs.KW)}${statChip('RPM',rec.specs.RPM)}${statChip('A',rec.specs.A)}</div>
+        </div>`;
+    }
+    const posHtml = renderPositionsView(axisKey, rec.positions);
+    const flag = FLAGS[rec.country] || '';
+    const label = kind === 'motor' ? 'Motor' : 'Gearbox';
+    return `
+      <div class="unit-card">
+        <div class="unit-head">
+          <span class="unit-tag">${label}</span>
+          <div class="unit-head-right">
+            <span class="unit-qty">QTY ${fmt(rec.qty)}</span>
+            <button class="edit-btn" data-kind="${kind}" aria-label="Edit ${label}">✎</button>
+          </div>
+        </div>
+        <div class="unit-brand">${fmt(rec.brand)}</div>
+        <div class="unit-part">${fmt(rec.part_no)}</div>
+        ${specsHtml}
+        <div class="pos-wrap">
+          <div class="spec-block-label">Fitted positions</div>
+          ${posHtml}
+        </div>
+        <div class="unit-meta"><span class="flag">${flag}</span><span>${fmt(rec.country)} · Mfd ${fmt(rec.year)}</span></div>
+      </div>`;
+  }
+
+  function specFieldsHtml(axisKey, kind, rec){
+    if(axisKey === 'hoist' && kind === 'motor'){
+      return `
+        <div class="f-label">High speed (travel)</div>
+        <div class="f-row3">
+          <div class="f-spec"><label>V</label><input class="f-input" data-field="high_speed.V" value="${toInput(rec.high_speed.V)}"></div>
+          <div class="f-spec"><label>KW</label><input class="f-input" data-field="high_speed.KW" value="${toInput(rec.high_speed.KW)}"></div>
+          <div class="f-spec"><label>RPM</label><input class="f-input" data-field="high_speed.RPM" value="${toInput(rec.high_speed.RPM)}"></div>
+        </div>
+        <div class="f-label">Low speed (positioning)</div>
+        <div class="f-row3">
+          <div class="f-spec"><label>V</label><input class="f-input" data-field="low_speed.V" value="${toInput(rec.low_speed.V)}"></div>
+          <div class="f-spec"><label>KW</label><input class="f-input" data-field="low_speed.KW" value="${toInput(rec.low_speed.KW)}"></div>
+          <div class="f-spec"><label>RPM</label><input class="f-input" data-field="low_speed.RPM" value="${toInput(rec.low_speed.RPM)}"></div>
+        </div>`;
+    }
+    if(kind === 'gearbox'){
+      return `
+        <div class="f-label">Rating</div>
+        <div class="f-row3">
+          <div class="f-spec"><label>RPM</label><input class="f-input" data-field="specs.RPM" value="${toInput(rec.specs.RPM)}"></div>
+          <div class="f-spec"><label>Torque Nm</label><input class="f-input" data-field="specs.Torque" value="${toInput(rec.specs.Torque)}"></div>
+          <div class="f-spec"><label>Ratio</label><input class="f-input" data-field="specs.Ratio" value="${toInput(rec.specs.Ratio)}"></div>
+        </div>`;
+    }
+    if(axisKey === 'cross_travel'){
+      return `
+        <div class="f-label">Rating</div>
+        <div class="f-grid-specs">
+          <div class="f-spec"><label>V</label><input class="f-input" data-field="specs.V" value="${toInput(rec.specs.V)}"></div>
+          <div class="f-spec"><label>KW</label><input class="f-input" data-field="specs.KW" value="${toInput(rec.specs.KW)}"></div>
+          <div class="f-spec"><label>RPM</label><input class="f-input" data-field="specs.RPM" value="${toInput(rec.specs.RPM)}"></div>
+          <div class="f-spec"><label>Hz</label><input class="f-input" data-field="specs.Hz" value="${toInput(rec.specs.Hz)}"></div>
+          <div class="f-spec"><label>A</label><input class="f-input" data-field="specs.A" value="${toInput(rec.specs.A)}"></div>
+        </div>`;
+    }
+    // long_travel motor
+    return `
+      <div class="f-label">Rating</div>
+      <div class="f-grid-specs">
+        <div class="f-spec"><label>V</label><input class="f-input" data-field="specs.V" value="${toInput(rec.specs.V)}"></div>
+        <div class="f-spec"><label>KW</label><input class="f-input" data-field="specs.KW" value="${toInput(rec.specs.KW)}"></div>
+        <div class="f-spec"><label>RPM</label><input class="f-input" data-field="specs.RPM" value="${toInput(rec.specs.RPM)}"></div>
+        <div class="f-spec"><label>A</label><input class="f-input" data-field="specs.A" value="${toInput(rec.specs.A)}"></div>
+      </div>`;
+  }
+
+  function posRowHtml(axisKey, p){
+    const hasSub = axisKey === 'cross_travel';
+    p = p || {loc:'',sub:'',serial:''};
+    return `
+      <div class="pos-edit-row ${hasSub?'':'noSub'}">
+        <input class="f-input" data-role="loc" placeholder="Loc (A/B…)" value="${toInput(p.loc)}">
+        ${hasSub ? `<input class="f-input" data-role="sub" placeholder="Label (CT1…)" value="${toInput(p.sub)}">` : ''}
+        <input class="f-input" data-role="serial" placeholder="Serial no." value="${toInput(p.serial)}">
+        <button type="button" class="row-remove" aria-label="Remove position">×</button>
+      </div>`;
+  }
+
+  function unitCardEdit(axisKey, kind, rec){
+    const label = kind === 'motor' ? 'Motor' : 'Gearbox';
+    const posRows = (rec.positions && rec.positions.length ? rec.positions : [null]).map(p=>posRowHtml(axisKey,p)).join('');
+    return `
+      <div class="unit-card editing" data-kind="${kind}">
+        <div class="unit-head"><span class="unit-tag">Editing ${label}</span></div>
+        <div class="f-label">Brand</div>
+        <input class="f-input" data-field="brand" value="${toInput(rec.brand)}" placeholder="e.g. KONE">
+        <div class="f-label">Part no. / part name</div>
+        <input class="f-input" data-field="part_no" value="${toInput(rec.part_no)}" placeholder="e.g. MF13X - 106N171P85004N">
+        <div class="f-row3">
+          <div><div class="f-label" style="margin-top:10px">Qty</div><input class="f-input" data-field="qty" value="${toInput(rec.qty)}"></div>
+          <div><div class="f-label" style="margin-top:10px">Country</div><input class="f-input" data-field="country" value="${toInput(rec.country)}"></div>
+          <div><div class="f-label" style="margin-top:10px">Year</div><input class="f-input" data-field="year" value="${toInput(rec.year)}"></div>
+        </div>
+        ${specFieldsHtml(axisKey, kind, rec)}
+        <div class="f-label">Fitted positions</div>
+        <div class="pos-edit-list">${posRows}</div>
+        <button type="button" class="add-row-btn">+ Add position</button>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancelEditBtn">Cancel</button>
+          <button type="button" class="btn-primary" id="saveEditBtn">Save</button>
+        </div>
+      </div>`;
+  }
+
+  function readPositionsFromForm(cardEl, axisKey){
+    const rows = cardEl.querySelectorAll('.pos-edit-row');
+    const out = [];
+    rows.forEach(row=>{
+      const loc = row.querySelector('[data-role="loc"]').value.trim();
+      const subInput = row.querySelector('[data-role="sub"]');
+      const sub = subInput ? subInput.value.trim() : '';
+      const serial = row.querySelector('[data-role="serial"]').value.trim();
+      if(!loc && !sub && !serial) return;
+      out.push({ loc: loc || null, sub: axisKey==='cross_travel' ? (sub || null) : null, serial: smartVal(serial) });
+    });
+    return out;
+  }
+
+  function readFieldsFromForm(cardEl){
+    const out = {};
+    cardEl.querySelectorAll('[data-field]').forEach(inp=>{
+      const path = inp.dataset.field.split('.');
+      const v = smartVal(inp.value);
+      if(path.length === 1){
+        out[path[0]] = (path[0]==='brand'||path[0]==='part_no'||path[0]==='country')
+          ? (inp.value.trim() || null) : v;
+      } else {
+        out[path[0]] = out[path[0]] || {};
+        out[path[0]][path[1]] = v;
+      }
+    });
+    return out;
+  }
+
+  function renderAxis(){
+    const c = DATA[currentId];
+    const rec = c[currentAxis];
+    const meta = AXIS_META[currentAxis];
+    axisContent.className = 'axis-' + currentAxis;
+
+    const motorHtml = (editingUnit === 'motor')
+      ? unitCardEdit(currentAxis, 'motor', rec.motor)
+      : unitCardView(currentAxis, 'motor', rec.motor);
+    const gearHtml = (editingUnit === 'gearbox')
+      ? unitCardEdit(currentAxis, 'gearbox', rec.gearbox)
+      : unitCardView(currentAxis, 'gearbox', rec.gearbox);
+
+    axisContent.innerHTML = `<p class="axis-caption">${meta.caption}</p>${motorHtml}${gearHtml}`;
+
+    // wire up edit buttons (view mode)
+    axisContent.querySelectorAll('.edit-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ editingUnit = btn.dataset.kind; renderAxis(); });
+    });
+
+    // wire up edit form (if present)
+    const editCard = axisContent.querySelector('.unit-card.editing');
+    if(editCard){
+      editCard.querySelector('.add-row-btn').addEventListener('click', ()=>{
+        editCard.querySelector('.pos-edit-list').insertAdjacentHTML('beforeend', posRowHtml(currentAxis, null));
+        wireRemoveButtons(editCard);
+      });
+      wireRemoveButtons(editCard);
+      editCard.querySelector('#cancelEditBtn').addEventListener('click', ()=>{ editingUnit = null; renderAxis(); });
+      editCard.querySelector('#saveEditBtn').addEventListener('click', ()=>{
+        const kind = editCard.dataset.kind;
+        const fields = readFieldsFromForm(editCard);
+        const positions = readPositionsFromForm(editCard, currentAxis);
+        Object.assign(DATA[currentId][currentAxis][kind], fields, { positions });
+        editingUnit = null;
+        renderAxis();
+        buildGrid();
+        toast('Saved');
+      });
+    }
+  }
+
+  function wireRemoveButtons(editCard){
+    editCard.querySelectorAll('.row-remove').forEach(b=>{
+      b.onclick = ()=>{ b.closest('.pos-edit-row').remove(); };
+    });
+  }
+
+  tabsEl.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.tab');
+    if(!btn) return;
+    currentAxis = btn.dataset.axis;
+    editingUnit = null;
+    tabsEl.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t===btn));
+    renderAxis();
+  });
+
+  function openDetail(id){
+    currentId = id;
+    currentAxis = 'hoist';
+    editingUnit = null;
+    const c = DATA[id];
+    craneIdEl.textContent = 'OH-' + String(id).padStart(2,'0');
+    craneYearChip.textContent = craneYear(c) || 'Year n/a';
+    craneMetaEl.textContent = 'Overhead travelling crane';
+    tabsEl.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.axis==='hoist'));
+    renderAxis();
+    viewHome.classList.remove('active');
+    viewDetail.classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function goHome(){
+    viewDetail.classList.remove('active');
+    viewHome.classList.add('active');
+  }
+
+  document.getElementById('backBtn').addEventListener('click', goHome);
+
+  buildGrid();
+})();
+</script>
+</body>
+</html>
